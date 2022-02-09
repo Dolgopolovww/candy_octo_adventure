@@ -22,7 +22,7 @@ postgres_info = {
     'user': '',
     'password': '',
     'db': '',
-    'port': 3306,
+    'port': 0000,
 }
 
 redis = {
