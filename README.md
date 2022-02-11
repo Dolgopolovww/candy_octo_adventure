@@ -1,1 +1,2 @@
-# telegram_bot_template
+# candy_octo_adventure
+ Бот для соадкоежек
