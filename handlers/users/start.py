@@ -7,6 +7,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from configuration_data.config import postgres_info as pi
+from keyboards.inline.add_items import adding_options_items
+from keyboards.inline.navigator import navigation_menu_keybord, navigation_menu
 from utils.db.creating_tables import User, Account_balance
 from utils.db.func_db import add_user
 from utils.loader import dp
@@ -17,6 +19,8 @@ from keyboards.inline.main_menu import mm_keybord
 engine = create_engine(f"postgresql+psycopg2://{pi['user']}:{pi['password']}@{pi['host']}:{pi['port']}/{pi['db']}")
 Session = sessionmaker(bind=engine)
 session = Session()
+
+#@dp.callback_query_handler(main_menu.filter(action="add_items"))
 
 
 @dp.message_handler(CommandStart())
@@ -43,3 +47,13 @@ async def bot_start(message: types.Message):
     balance = session.query(Account_balance).filter(Account_balance.user_id==telegram_id).first().balance
     await message.answer(f'Привет, сладкоежка!\n'
                          f'Остаток: {balance}', reply_markup=mm_keybord)
+
+
+@dp.callback_query_handler(navigation_menu.filter(action="main_menu"))
+async def bot_main(call: types.CallbackQuery):
+    telegram_id = call.from_user.id
+    balance = session.query(Account_balance).filter(Account_balance.user_id==telegram_id).first().balance
+    #last_purchase = session.query(Cost_history).filter(Cost_history.telegram_id==telegram_id).first().sum
+    #res = last_balance - las
+    await call.message.edit_text(f'Привет, сладкоежка!\n'
+                                 f'Остаток: {balance}', reply_markup=mm_keybord)

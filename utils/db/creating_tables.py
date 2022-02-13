@@ -33,7 +33,9 @@ class Cost_history(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("user.telegram_id"))
     date = Column(DateTime)
-    change = Column(Integer) # изменение
+    purchase_name = Column(String(255))
+    sum = Column(Integer)
+    store_name = Column(String(255))
 
 
 #Base.metadata.drop_all(engine)
