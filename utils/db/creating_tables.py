@@ -32,7 +32,7 @@ class Cost_history(Base):
     __tablename__ = "cost history"
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("user.telegram_id"))
-    date = Column(DateTime)
+    date = Column(Date)
     purchase_name = Column(String(255))
     sum = Column(Integer)
     store_name = Column(String(255))

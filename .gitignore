@@ -139,3 +139,4 @@ dmypy.json
 cython_debug/
 
 /configuration_data/config.py
+/more.py

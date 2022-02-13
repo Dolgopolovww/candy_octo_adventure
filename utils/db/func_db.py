@@ -34,6 +34,7 @@ def add_items(telegram_id, date, purchase_name, sum, store_name):
     except Exception as ex:
         #ic(ex)
         session.rollback()
+        return "error"
 
 def recalculate_balance(telegram_id):
     try:
@@ -44,6 +45,6 @@ def recalculate_balance(telegram_id):
         session.query(Account_balance).filter(Account_balance.user_id == telegram_id).update({Account_balance.balance:balance})
         session.commit()
     except Exception as ex:
-        ic(ex)
+        #ic(ex)
         pass
 

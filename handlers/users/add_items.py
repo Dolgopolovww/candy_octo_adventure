@@ -4,6 +4,7 @@ from aiogram.dispatcher import FSMContext
 
 from handlers.users.start import bot_main
 from keyboards.inline.add_items import adding_options_items, adding_options_keybord
+from keyboards.inline.navigator import navigation_menu_keyboard, navigation_menu_opt_keyboard
 from states.add_manually_items import AddItems
 from utils.db.func_db import add_items, recalculate_balance
 from utils.loader import dp
@@ -18,7 +19,7 @@ async def choice_method(call: CallbackQuery, callback_data: dict):
 
 @dp.callback_query_handler(adding_options_items.filter(action="add_manually"))
 async def add_manually_items(call: CallbackQuery):
-    await call.message.edit_text(f"Укажите дату покупки")
+    await call.message.edit_text(f"Укажите дату покупки", reply_markup=navigation_menu_keyboard)
     await call.answer("")
     await AddItems.date.set()
 
@@ -26,21 +27,21 @@ async def add_manually_items(call: CallbackQuery):
 async def save_date(message: Message, state: FSMContext):
     async with state.proxy() as data:
         data["date"] = message.text
-    await message.answer(f"Укажите наименование покупки")
+    await message.answer(f"Укажите наименование покупки", reply_markup=navigation_menu_keyboard)
     await AddItems.purchase_name.set()
 
 @dp.message_handler(state=AddItems.purchase_name)
 async def save_purchase_name(message: Message, state: FSMContext):
     async with state.proxy() as data:
         data["purchase_name"] = message.text
-    await message.answer(f"Напиши сумму которую потратил")
+    await message.answer(f"Напиши сумму которую потратил", reply_markup=navigation_menu_keyboard)
     await AddItems.sum.set()
 
 @dp.message_handler(state=AddItems.sum)
 async def save_sum(message: Message, state: FSMContext):
     async with state.proxy() as data:
         data["sum"] = message.text
-    await message.answer(f"В каком магазине??")
+    await message.answer(f"В каком магазине??", reply_markup=navigation_menu_keyboard)
     await AddItems.store_name.set()
 
 @dp.message_handler(state=AddItems.store_name)
@@ -48,6 +49,10 @@ async def save_store_name(message: Message, state: FSMContext):
     async with state.proxy() as data:
         data["store_name"] = message.text
     await state.finish()
-    add_items(telegram_id=message.from_user.id, date=data["date"], purchase_name=data["purchase_name"],
+    res = add_items(telegram_id=message.from_user.id, date=data["date"], purchase_name=data["purchase_name"],
               sum=data["sum"], store_name=data["store_name"])
-    await message.answer(f"Запись успешно добавлена")
+    if res == None:
+        await message.answer(f"Запись успешно добавлена", reply_markup=navigation_menu_keyboard)
+    else:
+        await message.answer(f"Возникли проблемы, либо ты что-то написал не верно, либо сервер лагает, в общем повтори..", reply_markup=navigation_menu_keyboard)
+
